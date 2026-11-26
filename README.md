@@ -1,253 +1,298 @@
-<h1 align="center">
-<em>Ask-before-Plan</em> <br>
-Proactive Language Agents for Real-World Planning
-</h1>
+# 🧠 PlanWise — AI Assistant That Asks Before It Plans
 
-<p align="center">
-  <a href="https://arxiv.org/abs/2406.12639">Paper</a> •
-  <a href="https://huggingface.co/datasets/magicgh/Ask-before-Plan">Data</a> •
-  <a href="https://drive.google.com/file/d/1pF1Sw6pBmq2sFkJvm-LzJOqrmfWoQgxE">Environment</a> •
-  <a href="https://huggingface.co/magicgh/CEP">Checkpoints</a>
-</p>
+> **PlanWise** is an NLP-powered planning assistant that understands a user's goal, identifies missing information, asks relevant questions, and then creates a personalized plan.
 
-## Installation
-To install this repository, follow the steps below:
-1. Clone the repository:
-```bash
-git clone https://github.com/magicgh/Ask-before-Plan
+Most planning assistants immediately generate a plan from incomplete information. **PlanWise takes a different approach — it asks first, understands the user's requirements, and plans afterward.**
+
+---
+
+## ✨ Why PlanWise?
+
+Suppose a user says:
+
+> "I want to prepare for a software engineering interview."
+
+A normal AI assistant might immediately generate a study plan.
+
+PlanWise first asks:
+
+- What is your current coding level?
+- How many hours can you study each day?
+- When is your interview?
+- Which topics have you already completed?
+- Which programming language do you prefer?
+
+After collecting the important information, it generates a more useful and personalized plan.
+
+---
+
+## 🚀 Main Features
+
+- 💬 Natural language conversation
+- 🔎 Identifies missing information from user requests
+- ❓ Generates relevant follow-up questions
+- 🧠 Understands user goals and constraints
+- 📋 Creates personalized plans
+- 🔄 Allows users to modify their requirements
+- 📊 Displays the final plan in an easy-to-read format
+
+---
+
+## 🏗️ How It Works
+
+```text
+User Goal
+   ↓
+NLP Processing
+   ↓
+Understand Intent
+   ↓
+Find Missing Information
+   ↓
+Ask Follow-up Questions
+   ↓
+Collect User Requirements
+   ↓
+Generate Personalized Plan
 ```
-2. Install the dependencies:
+
+### Example
+
+```text
+User:
+"I want to learn Python."
+
+PlanWise:
+"Sure! Before creating your plan, I need a few details."
+
+Q1. What is your current Python level?
+Q2. How much time can you study every day?
+Q3. What is your goal — college, job, projects, or interview?
+
+User:
+"Beginner, 2 hours/day, placement preparation."
+
+PlanWise:
+"Here is your personalized Python learning plan..."
+```
+
+---
+
+## 🛠️ Technology Stack
+
+| Component | Technology |
+|---|---|
+| Programming Language | Python |
+| NLP | NLTK / spaCy |
+| ML | Scikit-learn |
+| AI Model | LLM API |
+| Backend | FastAPI / Flask |
+| Frontend | Streamlit |
+| Data | JSON / CSV |
+
+---
+
+## 🧩 NLP Pipeline
+
+PlanWise uses a simple NLP pipeline:
+
+### 1. Text Preprocessing
+The user's message is cleaned and prepared for analysis.
+
+### 2. Intent Detection
+The system determines what the user wants to accomplish.
+
+Examples:
+
+```text
+"Learn DSA"          → Learning
+"Plan my trip"       → Travel
+"Prepare for exam"   → Education
+"Build a project"    → Project
+```
+
+### 3. Requirement Extraction
+
+The system tries to identify useful information such as:
+
+- Goal
+- Time available
+- Deadline
+- Experience level
+- Preferences
+- Constraints
+
+### 4. Missing Information Detection
+
+If important information is unavailable, PlanWise asks the user for it.
+
+### 5. Plan Generation
+
+After collecting enough information, the system creates the final plan.
+
+---
+
+## 📁 Project Structure
+
+```text
+PlanWise/
+│
+├── data/
+│   └── intents.json
+│
+├── models/
+│   └── intent_model.pkl
+│
+├── src/
+│   ├── preprocessing.py
+│   ├── intent_detection.py
+│   ├── question_generator.py
+│   ├── requirement_extractor.py
+│   └── planner.py
+│
+├── app.py
+├── train.py
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## ⚙️ Installation
+
+Clone the repository:
+
 ```bash
-cd Ask-before-Plan
+git clone https://github.com/YOUR_USERNAME/PlanWise.git
+```
+
+Move into the project:
+
+```bash
+cd PlanWise
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
-3. Download the `environment.zip` and extract it into the `Ask-before-Plan` directory.
 
-## Model Setup
-To use OpenAI models, `OPENAI_API_KEY` must be set in the environment.
-```bash
-export OPENAI_API_KEY=<API_KEY>
-```
+---
 
-For open-source models, we utilize vllm to deploy them as OpenAI compatible servers.  
-```bash
-# LLaMA-3-8B
-python3 -m vllm.entrypoints.openai.api_server \
---served-model-name "llama-3-8b-instruct" \
---model meta-llama/Meta-Llama-3-8B-Instruct \
---kv-cache-dtype fp8 \
---port 10086 \
---chat-template ./configs/chat_templates/llama-3-chat.jinja
-```
+## 🔑 API Configuration
+
+If an external LLM API is used, create an environment variable for your API key.
 
 ```bash
-# Mistral-7B
-python3 -m vllm.entrypoints.openai.api_server \
---served-model-name "mistral-7b-instruct" \
---model mistralai/Mistral-7B-Instruct-v0.2 \
---kv-cache-dtype fp8 \
---port 10087 \
---chat-template ./configs/chat_templates/mistral-instruct.jinja
-```  
+OPENAI_API_KEY=your_api_key
+```
 
-## Trajectory Tuning
-Please ensure the `trajectory_tuning` folder is available in your dataset directory. 
-Otherwise, clone the dataset from the [Hugging Face Hub](https://huggingface.co/datasets/magicgh/Ask-before-Plan) into the `data` directory.
-You can also use the [conversion script](./preprocess/prepare_finetune_data.py) to convert the raw data into the supervised finetuning format.
-### Clarification
-Use the following script to finetune the LLaMA-3-8B model:
+Never upload API keys directly to GitHub.
+
+---
+
+## ▶️ Running the Project
+
+Start the application:
+
 ```bash
-#!/bin/bash
-python3 src/finetune.py \
-    --data_path ./data/trajectory_tunning/clarification_train.json \
-    --output_dir ./models/llama-3-8b-ask \
-    --base_model meta-llama/Meta-Llama-3-8B-Instruct \
-    --batch_size 8 \
-    --micro_batch_size 1 
-```
-Use the following script to finetune the Mistral-7B model:
-```bash
-#!/bin/bash
-python3 src/finetune.py \
-    --data_path ./data/trajectory_tunning/clarification_train.json \
-    --output_dir ./models/mistral-7b-ask \
-    --base_model mistralai/Mistral-7B-Instruct-v0.2 \
-    --batch_size 8 \
-    --micro_batch_size 1 
-```
-### Execution
-Use the following script to finetune the LLaMA-3-8B model:
-```bash
-#!/bin/bash
-python3 src/finetune.py \
-    --data_path ./data/trajectory_tunning/execution_train.json \
-    --output_dir ./models/llama-3-8b-tool \
-    --base_model meta-llama/Meta-Llama-3-8B-Instruct \
-    --batch_size 16 \
-    --micro_batch_size 2 \
-    --warmup_steps 50 
-```
-Use the following script to finetune the Mistral-7B model:
-```bash
-#!/bin/bash
-python3 src/finetune.py \
-    --data_path ./data/trajectory_tunning/execution_train.json \
-    --output_dir ./models/mistral-7b-tool \
-    --base_model mistralai/Mistral-7B-Instruct-v0.2 \
-    --batch_size 16 \
-    --micro_batch_size 2 \
-    --warmup_steps 50 
-```
-## Agent Inference
-Here are some common arguments used in agent inference scripts:
-```bash
---data_split # Dataset split to use, e.g., train, test
---output_dir # Directory to save the results, e.g., ./output
---start_idx # Start index of the data samples, e.g., 0
---end_idx # End index of the data samples, e.g., 1000
---port # Port to connect to the model server, e.g., 10086.
-```
-Note that the `--port` argument is unavailable for Environment-only, Brute-force, Greedy Search, and the Integral Framework.
-
-### Clarification
-* Environment-only: `python3 src/clarification/environment_only.py [--data_split ...]`
-* Conversation-only 
-  * Proactive: `export PROMPT_METHOD=proactive`
-  * ProCoT: `export PROMPT_METHOD=procot`
-
-  ```bash
-  python3 src/clarification/conversation_only.py \
-  --model_name gpt-3.5-turbo \
-  --prompt_method $PROMPT_METHOD \
-  [--data_split ...]
-  ```
-* Environment + Conversation
-  * Direct (GPT-3.5): `export MODEL_NAME=gpt-3.5-turbo`
-  * CEP (Mistral-7B): `export MODEL_NAME=mistral-7b-ask`
-  * CEP (LLaMA-3-8B): `export MODEL_NAME=llama-3-8b-ask`
-  ```bash
-  python3 src/clarification/consultation.py \
-  --model_name $MODEL_NAME \
-  --prompt_method direct \
-  [--data_split ...]
-  ```
-
-### Execution
-* Brute-force: `python3 src/execution/brute_force.py`
-* LLM-based Agent
-  * Static Setting
-    * Direct (GPT-3.5)
-      ```bash
-      export MODEL_NAME=gpt-3.5-turbo
-      export PROMPT_METHOD=direct
-      ```
-    * CEP (Mistral-7B)
-      ```bash
-      export MODEL_NAME=mistral-7b-tool
-      export PROMPT_METHOD=zero_shot
-      ```
-    * CEP (LLaMA-3-8B)
-      ```bash
-      export MODEL_NAME=llama-3-8b-tool
-      export PROMPT_METHOD=zero_shot
-      ```
-  * Dynamic Setting
-    * ReAct and Reflexion
-      ```bash
-      export MODEL_NAME=gpt-3.5-turbo # or mistral-7b-instruct
-      export PROMPT_METHOD=react # or reflection
-      ```
-    * CEP
-      ```bash
-      export MODEL_NAME=gpt-3.5-turbo # or mistral-7b-instruct
-      export PROMPT_METHOD=memory
-      ```
-  ```bash
-  python3 src/execution/navigator.py \
-  --model_name $MODEL_NAME \
-  --prompt_method $PROMPT_METHOD \
-  [--data_split ...]
-  ```
-
-### Planning
-* Greedy Search: `python3 src/planning/greedy_search.py`
-* LLM-based Agent
-  ```bash
-  export MODEL_NAME=gpt-3.5-turbo or mistral-7b-instruct
-  export PROMPT_METHOD=direct # or cot, react, reflection
-  python3 src/planning/planner.py \
-  --model_name $MODEL_NAME \
-  --prompt_method $PROMPT_METHOD \
-  [--data_split ...]
-  ```
-### Integral Framework
-```bash
-export BASE_MODEL=llama-3-8b
-export PLANNER_MODEL=gpt-3.5-turbo
-export PROMPT_METHOD=all
-export ASK_PORT=10086
-export TOOL_PORT=10086
-
-python3 src/run_integral.py \
---base_model_name $BASE_MODEL \
---planner_model_name $PLANNER_MODEL \
---prompt_method $PROMPT_METHOD \
---ask_port $ASK_PORT \
---tool_port $TOOL_PORT \
-[--data_split ...]
+streamlit run app.py
 ```
 
-## Evaluation
-Common arguments used in evaluation scripts:
-```bash
---data_split # Dataset split to use, e.g., train, test
---evaluation_dir # Directory of the inference results, e.g., ./output
---model_name # Model name to evaluate, e.g., gpt-3.5-turbo
---prompt_method # Prompt method to evaluate, e.g., direct
-```
-### Clarification
-To enable the GPT-4 evaluation, add the `--gpt_eval` flag.
-```bash
-python3 evaluation/clarification/eval.py \
---gpt_eval \
-[--data_split ...]
-```
-### Execution
-```bash
-python3 evaluation/execution/eval.py \
-[--data_split ...]
-```
-### Planning
-```bash
-python3 evaluation/planning/eval.py \
-[--data_split ...]
+The application will open in your browser.
+
+---
+
+## 📌 Example Use Cases
+
+### 🎓 Study Planning
+
+```text
+"I want to prepare for DSA in 2 months."
 ```
 
-## Release Checklist
-* Code
-  - [x] Baselines
-  - [x] Trajectory Tuning Scripts
-  - [x] CEP Framework
-  - [x] Evaluation Scripts
-* Data
-  - [x] Ask-before-Plan Dataset
-  - [x] Ask-before-Plan Environment
-  - [x] Trajectory Tuning Dataset
-  - [x] Trajectory Tuning Checkpoints
+PlanWise asks about:
 
-## License
+- Current DSA knowledge
+- Daily study time
+- Preferred language
+- Target company/interview
+- Completed topics
 
-Our code is licensed under the [MIT License](./LICENSE).  
-The Ask-before-plan dataset and environment are available under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/).
+---
 
-## Citation
-If you find our research helpful for your work, please [![GitHub Repo stars](https://img.shields.io/github/stars/magicgh/ask-before-plan?style=social)](https://github.com/magicgh/Ask-before-Plan) this repository and cite our paper:
+### 💼 Career Planning
+
+```text
+"I want to prepare for a software internship."
 ```
-@article{ask-before-plan,
-    author = {Xuan Zhang and Yang Deng and Zifeng Ren and See-Kiong Ng and Tat-Seng Chua},
-    journal = {ArXiv preprint},
-    title = {Ask-before-Plan: Proactive Language Agents for Real-World Planning},
-    url = {https://arxiv.org/abs/2406.12639},
-    year = {2024}
-}
+
+The system collects information about:
+
+- Skills
+- Experience
+- Available time
+- Target role
+- Current preparation level
+
+---
+
+### ✈️ Trip Planning
+
+```text
+"I want to plan a trip to Jaipur."
 ```
+
+It can ask:
+
+- Number of days
+- Budget
+- Number of people
+- Travel preferences
+- Places of interest
+
+---
+
+## 🎯 Future Improvements
+
+- Voice-based interaction
+- Long-term user preferences
+- Calendar integration
+- Automatic task reminders
+- Multi-language support
+- Better intent classification
+- Personalized recommendations
+- Progress tracking
+
+---
+
+## 📚 Learning Outcomes
+
+By building PlanWise, you can learn:
+
+- NLP fundamentals
+- Text preprocessing
+- Intent classification
+- Information extraction
+- Conversational AI
+- Prompt engineering
+- API integration
+- Basic recommendation systems
+- Building an AI-powered web application
+
+---
+
+## 👨‍💻 Project Goal
+
+The goal of PlanWise is simple:
+
+> **Don't plan too early. Understand the user first.**
+
+The project demonstrates how NLP and conversational AI can be used to turn incomplete user requests into structured, personalized plans.
+
+---
+
+## 📄 License
+
+This project is created for educational and portfolio purposes.
